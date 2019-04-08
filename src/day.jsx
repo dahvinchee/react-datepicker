@@ -18,6 +18,7 @@ export default class Day extends React.Component {
     day: PropTypes.object.isRequired,
     dayClassName: PropTypes.func,
     endDate: PropTypes.object,
+    hoveredEndDate: PropTypes.object,
     highlightDates: PropTypes.instanceOf(Map),
     inline: PropTypes.bool,
     month: PropTypes.number,
@@ -68,11 +69,11 @@ export default class Day extends React.Component {
   };
 
   isInRange = () => {
-    const { day, startDate, endDate } = this.props;
+    const { day, startDate, endDate, hoveredEndDate } = this.props;
     if (!startDate || !endDate) {
       return false;
     }
-    return isDayInRange(day, startDate, endDate);
+    return isDayInEndDateRange(day, startDate, endDate, hoveredEndDate);
   };
 
   isInSelectingRange = () => {

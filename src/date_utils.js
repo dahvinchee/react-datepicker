@@ -291,6 +291,25 @@ export function isDayInRange(day, startDate, endDate) {
     .isBetween(before, after);
 }
 
+export function isDayInEndDateRange(day, startDate, endDate, hoveredEndDate) {
+  const before = startDate
+    .clone()
+    .startOf("day")
+    .subtract(1, "seconds");
+  const after = endDate
+    .clone()
+    .startOf("day")
+    .add(1, "seconds");
+  return day
+    .clone()
+    .startOf("day")
+    .isBetween(before, after) ||
+    day
+    .clone()
+    .startOf("day")
+    .isBefore(hoveredEndDate);
+}
+
 // *** Diffing ***
 
 export function getDaysDiff(date1, date2) {

@@ -25,6 +25,7 @@ export default class Week extends React.Component {
     preSelection: PropTypes.object,
     selected: PropTypes.object,
     selectingDate: PropTypes.object,
+    hoveredEndDate: PropTypes.object,
     selectsEnd: PropTypes.bool,
     selectsStart: PropTypes.bool,
     showWeekNumber: PropTypes.bool,

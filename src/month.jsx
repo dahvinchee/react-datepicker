@@ -22,6 +22,7 @@ export default class Month extends React.Component {
     maxDate: PropTypes.object,
     minDate: PropTypes.object,
     onDayClick: PropTypes.func,
+    hoveredEndDate: PropTypes.object,
     onDayMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
     onWeekSelect: PropTypes.func,
@@ -91,6 +92,7 @@ export default class Month extends React.Component {
           selectingDate={this.props.selectingDate}
           filterDate={this.props.filterDate}
           preSelection={this.props.preSelection}
+          hoveredEndDate={this.props.hoveredEndDate}
           selected={this.props.selected}
           selectsStart={this.props.selectsStart}
           selectsEnd={this.props.selectsEnd}
