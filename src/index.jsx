@@ -112,6 +112,7 @@ export default class DatePicker extends React.Component {
     onFocus: PropTypes.func,
     onInputClick: PropTypes.func,
     onKeyDown: PropTypes.func,
+    onDayMouseEnter: PropTypes.func,
     onMonthChange: PropTypes.func,
     onYearChange: PropTypes.func,
     onInputError: PropTypes.func,
@@ -632,6 +633,7 @@ export default class DatePicker extends React.Component {
         fixedHeight={this.props.fixedHeight}
         monthsShown={this.props.monthsShown}
         onDropdownFocus={this.handleDropdownFocus}
+        onDayMouseEnter={this.props.onDayMouseEnter}
         onMonthChange={this.props.onMonthChange}
         onYearChange={this.props.onYearChange}
         dayClassName={this.props.dayClassName}
