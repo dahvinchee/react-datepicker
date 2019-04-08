@@ -7,6 +7,7 @@ import {
   getDate,
   now,
   isSameDay,
+  isDayInEndDateRange,
   isDayDisabled,
   isDayInRange,
   getDayOfWeekCode
