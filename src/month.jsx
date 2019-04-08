@@ -9,10 +9,9 @@ const FIXED_HEIGHT_STANDARD_WEEK_COUNT = 6;
 export default class Month extends React.Component {
   static propTypes = {
     disabledKeyboardNavigation: PropTypes.bool,
-    day: PropTypes.instanceOf(Date).isRequired,
+    day: PropTypes.object.isRequired,
     dayClassName: PropTypes.func,
-    endDate: PropTypes.instanceOf(Date),
-    orderInDisplay: PropTypes.number,
+    endDate: PropTypes.object,
     excludeDates: PropTypes.array,
     filterDate: PropTypes.func,
     fixedHeight: PropTypes.bool,
@@ -20,33 +19,27 @@ export default class Month extends React.Component {
     highlightDates: PropTypes.instanceOf(Map),
     includeDates: PropTypes.array,
     inline: PropTypes.bool,
-    locale: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.shape({ locale: PropTypes.object })
-    ]),
-    maxDate: PropTypes.instanceOf(Date),
-    minDate: PropTypes.instanceOf(Date),
+    maxDate: PropTypes.object,
+    minDate: PropTypes.object,
     onDayClick: PropTypes.func,
     onDayMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
     onWeekSelect: PropTypes.func,
     peekNextMonth: PropTypes.bool,
-    preSelection: PropTypes.instanceOf(Date),
-    selected: PropTypes.instanceOf(Date),
-    selectingDate: PropTypes.instanceOf(Date),
+    preSelection: PropTypes.object,
+    selected: PropTypes.object,
+    selectingDate: PropTypes.object,
     selectsEnd: PropTypes.bool,
     selectsStart: PropTypes.bool,
     showWeekNumbers: PropTypes.bool,
-    startDate: PropTypes.instanceOf(Date),
-    setOpen: PropTypes.func,
-    shouldCloseOnSelect: PropTypes.bool,
-    renderDayContents: PropTypes.func,
-    showMonthYearPicker: PropTypes.bool
+    startDate: PropTypes.object,
+    utcOffset: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    renderDayContents: PropTypes.func
   };
 
   handleDayClick = (day, event) => {
     if (this.props.onDayClick) {
-      this.props.onDayClick(day, event, this.props.orderInDisplay);
+      this.props.onDayClick(day, event);
     }
   };
 
@@ -64,7 +57,7 @@ export default class Month extends React.Component {
 
   isWeekInMonth = startOfWeek => {
     const day = this.props.day;
-    const endOfWeek = utils.addDays(startOfWeek, 6);
+    const endOfWeek = utils.addDays(utils.cloneDate(startOfWeek), 6);
     return (
       utils.isSameMonth(startOfWeek, day) || utils.isSameMonth(endOfWeek, day)
     );
@@ -74,8 +67,7 @@ export default class Month extends React.Component {
     const weeks = [];
     var isFixedHeight = this.props.fixedHeight;
     let currentWeekStart = utils.getStartOfWeek(
-      utils.getStartOfMonth(this.props.day),
-      this.props.locale
+      utils.getStartOfMonth(utils.cloneDate(this.props.day))
     );
     let i = 0;
     let breakAfterNextPush = false;
@@ -90,7 +82,6 @@ export default class Month extends React.Component {
           onDayMouseEnter={this.handleDayMouseEnter}
           onWeekSelect={this.props.onWeekSelect}
           formatWeekNumber={this.props.formatWeekNumber}
-          locale={this.props.locale}
           minDate={this.props.minDate}
           maxDate={this.props.maxDate}
           excludeDates={this.props.excludeDates}
@@ -107,8 +98,7 @@ export default class Month extends React.Component {
           startDate={this.props.startDate}
           endDate={this.props.endDate}
           dayClassName={this.props.dayClassName}
-          setOpen={this.props.setOpen}
-          shouldCloseOnSelect={this.props.shouldCloseOnSelect}
+          utcOffset={this.props.utcOffset}
           disabledKeyboardNavigation={this.props.disabledKeyboardNavigation}
           renderDayContents={this.props.renderDayContents}
         />
@@ -117,7 +107,7 @@ export default class Month extends React.Component {
       if (breakAfterNextPush) break;
 
       i++;
-      currentWeekStart = utils.addWeeks(currentWeekStart, 1);
+      currentWeekStart = utils.addWeeks(utils.cloneDate(currentWeekStart), 1);
 
       // If one of these conditions is true, we will either break on this week
       // or break on the next week
@@ -138,80 +128,23 @@ export default class Month extends React.Component {
     return weeks;
   };
 
-  onMonthClick = (e, m) => {
-    this.handleDayClick(
-      utils.getStartOfMonth(utils.setMonth(this.props.day, m), e)
-    );
-  };
-
-  getMonthClassNames = m => {
-    const { day, startDate, endDate, selected, minDate, maxDate } = this.props;
-
-    return classnames(
-      "react-datepicker__month-text",
-      `react-datepicker__month-${m}`,
-      {
-        "react-datepicker__month--disabled":
-          minDate && maxDate && !utils.isMonthinRange(minDate, maxDate, m, day),
-        "react-datepicker__month--selected":
-          utils.getMonth(day) === m &&
-          utils.getYear(day) === utils.getYear(selected),
-        "react-datepicker__month--in-range": utils.isMonthinRange(
-          startDate,
-          endDate,
-          m,
-          day
-        )
-      }
-    );
-  };
-
-  renderMonths = () => {
-    const months = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]];
-    return months.map((month, i) => (
-      <div className="react-datepicker__month-wrapper" key={i}>
-        {month.map((m, j) => (
-          <div
-            key={j}
-            onClick={ev => {
-              this.onMonthClick(ev.target, m);
-            }}
-            className={this.getMonthClassNames(m)}
-          >
-            {utils.getMonthShortInLocale(m, this.props.locale)}
-          </div>
-        ))}
-      </div>
-    ));
-  };
-
   getClassNames = () => {
-    const {
-      selectingDate,
-      selectsStart,
-      selectsEnd,
-      showMonthYearPicker
-    } = this.props;
-    return classnames(
-      "react-datepicker__month",
-      {
-        "react-datepicker__month--selecting-range":
-          selectingDate && (selectsStart || selectsEnd)
-      },
-      { "react-datepicker__monthPicker": showMonthYearPicker }
-    );
+    const { selectingDate, selectsStart, selectsEnd } = this.props;
+    return classnames("react-datepicker__month", {
+      "react-datepicker__month--selecting-range":
+        selectingDate && (selectsStart || selectsEnd)
+    });
   };
 
   render() {
-    const { showMonthYearPicker } = this.props;
     return (
       <div
         className={this.getClassNames()}
         onMouseLeave={this.handleMouseLeave}
         role="listbox"
-        aria-label={"month-" + utils.formatDate(this.props.day, "YYYY-MM")}
+        aria-label={"month-" + this.props.day.format("YYYY-MM")}
       >
-        {showMonthYearPicker ? this.renderMonths() : this.renderWeeks()}
+        {this.renderWeeks()}
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import React from "react";
 import DatePicker from "react-datepicker";
-import addDays from "date-fns/addDays";
+import moment from "moment";
 
 export default class includeDates extends React.Component {
   state = {
@@ -25,7 +25,7 @@ export default class includeDates extends React.Component {
             {"onChange={this.handleChange}"}
             <br />
             <strong>
-              {"includeDates={[new Date(), addDays(new Date(), 1)]}"}
+              {'includeDates={[moment(), moment().add(1, "days")]}'}
             </strong>
             <br />
             {'placeholderText="This only includes today and tomorrow" />'}
@@ -35,9 +35,8 @@ export default class includeDates extends React.Component {
           <DatePicker
             selected={this.state.startDate}
             onChange={this.handleChange}
-            includeDates={[new Date(), addDays(new Date(), 1)]}
-            placeholderText="This only includes today and tomorrow"
-          />
+            includeDates={[moment(), moment().add(1, "days")]}
+            placeholderText="This only includes today and tomorrow"/>
         </div>
       </div>
     );

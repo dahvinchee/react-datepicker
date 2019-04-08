@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {
-  getHours,
-  getMinutes,
+  getHour,
+  getMinute,
   newDate,
   getStartOfDay,
   addMinutes,
+  cloneDate,
   formatDate,
   isTimeInDisabledRange,
   isTimeDisabled,
@@ -17,11 +18,11 @@ export default class Time extends React.Component {
     format: PropTypes.string,
     includeTimes: PropTypes.array,
     intervals: PropTypes.number,
-    selected: PropTypes.instanceOf(Date),
+    selected: PropTypes.object,
     onChange: PropTypes.func,
     todayButton: PropTypes.node,
-    minTime: PropTypes.instanceOf(Date),
-    maxTime: PropTypes.instanceOf(Date),
+    minTime: PropTypes.object,
+    maxTime: PropTypes.object,
     excludeTimes: PropTypes.array,
     monthRef: PropTypes.object,
     timeCaption: PropTypes.string,
@@ -64,13 +65,14 @@ export default class Time extends React.Component {
     ) {
       return;
     }
+
     this.props.onChange(time);
   };
 
   liClasses = (time, currH, currM) => {
     let classes = ["react-datepicker__time-list-item"];
 
-    if (currH === getHours(time) && currM === getMinutes(time)) {
+    if (currH === getHour(time) && currM === getMinute(time)) {
       classes.push("react-datepicker__time-list-item--selected");
     }
     if (
@@ -85,7 +87,7 @@ export default class Time extends React.Component {
     }
     if (
       this.props.injectTimes &&
-      (getHours(time) * 60 + getMinutes(time)) % this.props.intervals !== 0
+      (getHour(time) * 60 + getMinute(time)) % this.props.intervals !== 0
     ) {
       classes.push("react-datepicker__time-list-item--injected");
     }
@@ -95,11 +97,11 @@ export default class Time extends React.Component {
 
   renderTimes = () => {
     let times = [];
-    const format = this.props.format ? this.props.format : "p";
+    const format = this.props.format ? this.props.format : "hh:mm A";
     const intervals = this.props.intervals;
     const activeTime = this.props.selected ? this.props.selected : newDate();
-    const currH = getHours(activeTime);
-    const currM = getMinutes(activeTime);
+    const currH = getHour(activeTime);
+    const currM = getMinute(activeTime);
     let base = getStartOfDay(newDate());
     const multiplier = 1440 / intervals;
     const sortedInjectTimes =
@@ -108,7 +110,7 @@ export default class Time extends React.Component {
         return a - b;
       });
     for (let i = 0; i < multiplier; i++) {
-      const currentTime = addMinutes(base, i * intervals);
+      const currentTime = addMinutes(cloneDate(base), i * intervals);
       times.push(currentTime);
 
       if (sortedInjectTimes) {
@@ -130,8 +132,8 @@ export default class Time extends React.Component {
         className={this.liClasses(time, currH, currM)}
         ref={li => {
           if (
-            (currH === getHours(time) && currM === getMinutes(time)) ||
-            (currH === getHours(time) && !this.centerLi)
+            (currH === getHour(time) && currM === getMinute(time)) ||
+            (currH === getHour(time) && !this.centerLi)
           ) {
             this.centerLi = li;
           }

@@ -1,11 +1,12 @@
 import React from "react";
 import DatePicker from "react-datepicker";
+import moment from "moment";
 
 export default class YearDropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      startDate: new Date()
+      startDate: moment()
     };
   }
 
@@ -39,8 +40,7 @@ export default class YearDropdown extends React.Component {
             peekNextMonth
             showMonthDropdown
             showYearDropdown
-            dropdownMode="select"
-          />
+            dropdownMode="select"/>
         </div>
       </div>
     );

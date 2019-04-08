@@ -1,6 +1,6 @@
 import React from "react";
 import DatePicker from "react-datepicker";
-import subDays from "date-fns/subDays";
+import moment from "moment";
 
 export default class ExcludeDates extends React.Component {
   state = {
@@ -25,7 +25,7 @@ export default class ExcludeDates extends React.Component {
             {"  onChange={this.handleChange}"}
             <br />
             <strong>
-              {"  excludeDates={[new Date(), subDays(new Date(), 1)]}"}
+              {'  excludeDates={[moment(), moment().subtract(1, "days")]}'}
             </strong>
             <br />
             {
@@ -37,9 +37,8 @@ export default class ExcludeDates extends React.Component {
           <DatePicker
             selected={this.state.startDate}
             onChange={this.handleChange}
-            excludeDates={[new Date(), subDays(new Date(), 1)]}
-            placeholderText="Select a date other than today or yesterday"
-          />
+            excludeDates={[moment(), moment().subtract(1, "days")]}
+            placeholderText="Select a date other than today or yesterday"/>
         </div>
       </div>
     );

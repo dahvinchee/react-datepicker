@@ -10,7 +10,6 @@ import CustomDayClassNames from "./examples/custom_day_class_names";
 import PlaceholderText from "./examples/placeholder_text";
 import SpecificDateRange from "./examples/specific_date_range";
 import Locale from "./examples/locale";
-import LocaleWithoutGlobalVariable from "./examples/locale_without_global_variable";
 import ExcludeDates from "./examples/exclude_dates";
 import HighlightDates from "./examples/highlight_dates";
 import HighlightDatesRanges from "./examples/highlight_dates_with_ranges";
@@ -30,6 +29,7 @@ import MonthYearDropdown from "./examples/month_year_dropdown";
 import MonthDropdownShort from "./examples/month_dropdown_short";
 import YearSelectDropdown from "./examples/year_select_dropdown";
 import Today from "./examples/today";
+import TimeZoneDate from "./examples/timezone_date";
 import Inline from "./examples/inline";
 import OpenToDate from "./examples/open_to_date";
 import FixedCalendar from "./examples/fixed_calendar";
@@ -52,11 +52,7 @@ import IncludeTimes from "./examples/include_times";
 import InjectTimes from "./examples/inject_times";
 import DontCloseOnSelect from "./examples/dont_close_onSelect";
 import RenderCustomHeader from "./examples/render_custom_header";
-import RenderCustomDay from "./examples/render_custom_day";
-import TimeInput from "./examples/timeInput";
-import StrictParsing from "./examples/strict_parsing";
-import MonthPicker from "./examples/month_picker";
-import RangeMonthPicker from "./examples/range_month_picker";
+
 import "react-datepicker/dist/react-datepicker.css";
 import "./style.scss";
 
@@ -115,6 +111,10 @@ export default class exampleComponents extends React.Component {
       component: <Today />
     },
     {
+      title: `TimeZone date`,
+      component: <TimeZoneDate />
+    },
+    {
       title: "Placeholder text",
       component: <PlaceholderText />
     },
@@ -129,10 +129,6 @@ export default class exampleComponents extends React.Component {
     {
       title: "Locale",
       component: <Locale />
-    },
-    {
-      title: "Locale without global variables",
-      component: <LocaleWithoutGlobalVariable />
     },
     {
       title: "Exclude dates",
@@ -265,26 +261,6 @@ export default class exampleComponents extends React.Component {
     {
       title: "Custom header",
       component: <RenderCustomHeader />
-    },
-    {
-      title: "Custom Day",
-      component: <RenderCustomDay />
-    },
-    {
-      title: "Input time",
-      component: <TimeInput />
-    },
-    {
-      title: "Strict parsing",
-      component: <StrictParsing />
-    },
-    {
-      title: "Month Picker",
-      component: <MonthPicker />
-    },
-    {
-      title: "Range Month Picker",
-      component: <RangeMonthPicker />
     }
   ];
 

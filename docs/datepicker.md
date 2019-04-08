@@ -19,7 +19,7 @@ General datepicker component.
 | `disabled`                   | `bool`                         | `false`         |                                            |
 | `disabledKeyboardNavigation` | `bool`                         | `false`         |                                            |
 | `dropdownMode` (required)    | `enum('scroll'\|'select')`     | `'scroll'`      |                                            |
-| `endDate`                    | `instanceOf(Date)`             |                 |                                            |
+| `endDate`                    | `object`                       |                 |                                            |
 | `excludeDates`               | `array`                        |                 |                                            |
 | `excludeTimes`               | `array`                        |                 |                                            |
 | `filterDate`                 | `func`                         |                 |                                            |
@@ -34,10 +34,10 @@ General datepicker component.
 | `inline`                     | `bool`                         |                 |                                            |
 | `isClearable`                | `bool`                         |                 |                                            |
 | `locale`                     | `string`                       |                 |                                            |
-| `maxDate`                    | `instanceOf(Date)`             |                 |                                            |
-| `maxTime`                    | `instanceOf(Date)`             |                 |                                            |
-| `minDate`                    | `instanceOf(Date)`             |                 |                                            |
-| `minTime`                    | `instanceOf(Date)`             |                 |                                            |
+| `maxDate`                    | `object`                       |                 |                                            |
+| `maxTime`                    | `object`                       |                 |                                            |
+| `minDate`                    | `object`                       |                 |                                            |
+| `minTime`                    | `object`                       |                 |                                            |
 | `monthsShown`                | `number`                       | `1`             |                                            |
 | `name`                       | `string`                       |                 |                                            |
 | `onBlur`                     | `func`                         | `function() {}` |                                            |
@@ -50,7 +50,7 @@ General datepicker component.
 | `onYearChange`               | `func`                         | `function() {}` |                                            |
 | `onSelect`                   | `func`                         | `function() {}` |                                            |
 | `onWeekSelect`               | `func`                         |                 |                                            |
-| `openToDate`                 | `instanceOf(Date)`             |                 |                                            |
+| `openToDate`                 | `object`                       |                 |                                            |
 | `peekNextMonth`              | `bool`                         |                 |                                            |
 | `placeholderText`            | `string`                       |                 |                                            |
 | `popperClassName`            | `string`                       |                 |                                            |
@@ -60,7 +60,7 @@ General datepicker component.
 | `readOnly`                   | `bool`                         |                 |                                            |
 | `required`                   | `bool`                         |                 |                                            |
 | `scrollableYearDropdown`     | `bool`                         |                 |                                            |
-| `selected`                   | `instanceOf(Date)`             |                 |                                            |
+| `selected`                   | `object`                       |                 |                                            |
 | `selectsEnd`                 | `bool`                         |                 |                                            |
 | `selectsStart`               | `bool`                         |                 |                                            |
 | `shouldCloseOnSelect`        | `bool`                         | `true`          |                                            |
@@ -68,7 +68,7 @@ General datepicker component.
 | `showTimeSelect`             | `bool`                         | `false`         |                                            |
 | `showWeekNumbers`            | `bool`                         |                 |                                            |
 | `showYearDropdown`           | `bool`                         |                 |                                            |
-| `startDate`                  | `instanceOf(Date)`             |                 |                                            |
+| `startDate`                  | `object`                       |                 |                                            |
 | `startOpen`                  | `bool`                         |                 |                                            |
 | `tabIndex`                   | `number`                       |                 |                                            |
 | `timeFormat`                 | `string`                       |                 |                                            |

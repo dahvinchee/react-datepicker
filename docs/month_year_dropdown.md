@@ -2,11 +2,11 @@
 
 | name                          | type                       | default value | description |
 | ----------------------------- | -------------------------- | ------------- | ----------- |
-| `date` (required)             | `instanceOfDate`           |               |             |
+| `date` (required)             | `object`                   |               |             |
 | `dateFormat` (required)       | `string`                   |               |             |
 | `dropdownMode` (required)     | `enum("scroll"\|"select")` |               |             |
 | `locale`                      | `string`                   |               |             |
-| `maxDate` (required)          | `instanceOfDate`           |               |             |
-| `minDate` (required)          | `instanceOfDate`           |               |             |
+| `maxDate` (required)          | `object`                   |               |             |
+| `minDate` (required)          | `object`                   |               |             |
 | `onChange` (required)         | `func`                     |               |             |
 | `scrollableMonthYearDropdown` | `bool`                     |               |             |

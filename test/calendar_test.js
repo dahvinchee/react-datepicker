@@ -11,15 +11,12 @@ import DatePicker from "../src/index.jsx";
 import { shallow, mount } from "enzyme";
 import sinon from "sinon";
 import * as utils from "../src/date_utils";
-import eo from "date-fns/locale/eo";
-import fi from "date-fns/locale/fi";
 
 // TODO Possibly rename
-const DATE_FORMAT = "MM/dd/yyyy";
+const DATE_FORMAT = "MM/DD/YYYY";
 
 describe("Calendar", function() {
-  const dateFormat = "MMMM yyyy";
-  utils.registerLocale("fi", fi);
+  const dateFormat = "MMMM YYYY";
 
   function getCalendar(extraProps) {
     return shallow(
@@ -40,6 +37,21 @@ describe("Calendar", function() {
     assert(utils.isSameDay(calendar.state().date, now));
   });
 
+  it("should start with the today date with specified time zone", function() {
+    let utcOffset = 12;
+    let calendar = getCalendar({ utcOffset });
+    assert(
+      utils.isSameDay(calendar.state().date, utils.newDateWithOffset(utcOffset))
+    );
+
+    // using string offsets
+    utcOffset = "+12:00";
+    calendar = getCalendar({ utcOffset });
+    assert(
+      utils.isSameDay(calendar.state().date, utils.newDateWithOffset(utcOffset))
+    );
+  });
+
   it("should start with the selected date in view if provided", function() {
     const selected = utils.addYears(utils.newDate(), 1);
     const calendar = getCalendar({ selected });
@@ -55,8 +67,8 @@ describe("Calendar", function() {
 
   it("should start with the current date in view if in date range", function() {
     const now = utils.newDate();
-    const minDate = utils.subYears(now, 1);
-    const maxDate = utils.addYears(now, 1);
+    const minDate = utils.subtractYears(utils.cloneDate(now), 1);
+    const maxDate = utils.addYears(utils.cloneDate(now), 1);
     const calendar = getCalendar({ minDate, maxDate });
     assert(utils.isSameDay(calendar.state().date, now));
   });
@@ -74,55 +86,67 @@ describe("Calendar", function() {
   });
 
   it("should start with the max date in view if before the current date", function() {
-    const maxDate = utils.subYears(utils.newDate(), 1);
+    const maxDate = utils.subtractYears(utils.newDate(), 1);
     const calendar = getCalendar({ maxDate });
     assert(utils.isSameDay(calendar.state().date, maxDate));
   });
 
   it("should start with the max include date in view if before the current date", function() {
-    const maxDate = utils.subYears(utils.newDate(), 1);
+    const maxDate = utils.subtractYears(utils.newDate(), 1);
     const calendar = getCalendar({ includeDates: [maxDate] });
     assert(utils.isSameDay(calendar.state().date, maxDate));
   });
 
   it("should start with the open to date in view if given and no selected/min/max dates given", function() {
-    const openToDate = utils.parseDate("09/28/1993", DATE_FORMAT);
+    const openToDate = utils.parseDate("09/28/1993", {
+      dateFormat: DATE_FORMAT
+    });
     const calendar = getCalendar({ openToDate });
     assert(utils.isSameDay(calendar.state().date, openToDate));
   });
 
   it("should start with the open to date in view if given and after a min date", function() {
-    const openToDate = utils.parseDate("09/28/1993", DATE_FORMAT);
-    const minDate = utils.parseDate("01/01/1993", DATE_FORMAT);
+    const openToDate = utils.parseDate("09/28/1993", {
+      dateFormat: DATE_FORMAT
+    });
+    const minDate = utils.parseDate("01/01/1993", { dateFormat: DATE_FORMAT });
     const calendar = getCalendar({ openToDate, minDate });
     assert(utils.isSameDay(calendar.state().date, openToDate));
   });
 
   it("should start with the open to date in view if given and before a max date", function() {
-    const openToDate = utils.parseDate("09/28/1993", DATE_FORMAT);
-    const maxDate = utils.parseDate("12/31/1993", DATE_FORMAT);
+    const openToDate = utils.parseDate("09/28/1993", {
+      dateFormat: DATE_FORMAT
+    });
+    const maxDate = utils.parseDate("12/31/1993", { dateFormat: DATE_FORMAT });
     const calendar = getCalendar({ openToDate, maxDate });
     assert(utils.isSameDay(calendar.state().date, openToDate));
   });
 
   it("should start with the open to date in view if given and in range of the min/max dates", function() {
-    const openToDate = utils.parseDate("09/28/1993", DATE_FORMAT);
-    const minDate = utils.parseDate("01/01/1993", DATE_FORMAT);
-    const maxDate = utils.parseDate("12/31/1993", DATE_FORMAT);
+    const openToDate = utils.parseDate("09/28/1993", {
+      dateFormat: DATE_FORMAT
+    });
+    const minDate = utils.parseDate("01/01/1993", { dateFormat: DATE_FORMAT });
+    const maxDate = utils.parseDate("12/31/1993", { dateFormat: DATE_FORMAT });
     const calendar = getCalendar({ openToDate, minDate, maxDate });
     assert(utils.isSameDay(calendar.state().date, openToDate));
   });
 
   it("should open on openToDate date rather than selected date when both are specified", function() {
-    var openToDate = utils.parseDate("09/28/1993", DATE_FORMAT);
-    var selected = utils.parseDate("09/28/1995", DATE_FORMAT);
+    var openToDate = utils.parseDate("09/28/1993", { dateFormat: DATE_FORMAT });
+    var selected = utils.parseDate("09/28/1995", { dateFormat: DATE_FORMAT });
     var calendar = getCalendar({ openToDate, selected });
     assert(utils.isSameDay(calendar.state().date, openToDate));
   });
 
   it("should trigger date change when openToDate prop is set after calcInitialState()", () => {
-    const openToDate = utils.parseDate("09/28/1993", DATE_FORMAT);
-    const oneMonthFromOpenToDate = utils.parseDate("10/28/1993", DATE_FORMAT);
+    const openToDate = utils.parseDate("09/28/1993", {
+      dateFormat: DATE_FORMAT
+    });
+    const oneMonthFromOpenToDate = utils.parseDate("10/28/1993", {
+      dateFormat: DATE_FORMAT
+    });
     const calendar = getCalendar({ openToDate });
 
     assert(utils.isSameDay(calendar.state().date, openToDate));
@@ -166,15 +190,6 @@ describe("Calendar", function() {
       .forEach(dayName => expect(dayName.text()).to.have.length(1));
   });
 
-  it("should render the months correctly adjusted by monthSelectedIn", () => {
-    const selected = utils.newDate("2018-11-19");
-    const calendar = getCalendar({ inline: true, monthsShown: 2, selected });
-    calendar.setProps({ monthSelectedIn: 1 }, () => {
-      const renderedMonths = calendar.find(Month);
-      assert.equal(utils.getMonth(renderedMonths.first().prop("day")), 9);
-    });
-  });
-
   describe("custom header", function() {
     const months = [
       "January",
@@ -213,7 +228,7 @@ describe("Calendar", function() {
           </button>
 
           <select
-            value={utils.getYear(date)}
+            value={date.year()}
             className="year-select"
             onChange={({ target: { value } }) => changeYear(value)}
           >
@@ -226,7 +241,7 @@ describe("Calendar", function() {
 
           <select
             className="month-select"
-            value={months[utils.getMonth(date)]}
+            value={months[date.month()]}
             onChange={({ target: { value } }) => changeMonth(value)}
           >
             {months.map(option => (
@@ -255,7 +270,7 @@ describe("Calendar", function() {
       const match = {
         changeMonth: sinon.match.func,
         changeYear: sinon.match.func,
-        date: sinon.match.instanceOf(Date),
+        date: sinon.match.object,
         decreaseMonth: sinon.match.func,
         increaseMonth: sinon.match.func,
         nextMonthButtonDisabled: sinon.match.bool,
@@ -305,14 +320,12 @@ describe("Calendar", function() {
         renderCustomHeader
       });
 
-      const selected = utils.newDate(calendar.state().date);
+      const selected = calendar.state().date.clone();
       const prevMonth = calendar.find(".prevMonth");
 
       prevMonth.simulate("click");
 
-      expect(utils.getMonth(selected)).to.be.equal(
-        (utils.getMonth(calendar.state().date) + 1) % 12
-      );
+      expect(selected.month()).to.be.equal(calendar.state().date.month() + 1);
     });
 
     it("should go to next month", function() {
@@ -320,16 +333,12 @@ describe("Calendar", function() {
         renderCustomHeader
       });
 
-      const selected = utils.newDate(calendar.state().date);
+      const selected = calendar.state().date.clone();
       const nextMonth = calendar.find(".nextMonth");
 
       nextMonth.simulate("click");
 
-      const newMonth = utils.getMonth(calendar.state().date) - 1;
-
-      const resultMonth = newMonth === -1 ? 11 : newMonth;
-
-      expect(utils.getMonth(selected)).to.be.equal(resultMonth);
+      expect(selected.month()).to.be.equal(calendar.state().date.month() - 1);
     });
 
     it("nextMonthButtonDisabled flag should be true", function() {
@@ -337,7 +346,7 @@ describe("Calendar", function() {
 
       getCalendar({
         renderCustomHeader,
-        minDate: utils.subMonths(utils.newDate(), 1),
+        minDate: utils.subtractMonths(utils.newDate(), 1),
         maxDate: utils.newDate()
       });
 
@@ -389,9 +398,9 @@ describe("Calendar", function() {
 
       monthSelect.simulate("change", { target: { value: 4 } });
 
-      const selected = utils.newDate(calendar.state().date);
+      const selected = calendar.state().date.clone();
 
-      expect(utils.getMonth(selected)).to.be.equal(4);
+      expect(selected.month()).to.be.equal(4);
     });
 
     it("should select 2017 from month select", function() {
@@ -403,9 +412,9 @@ describe("Calendar", function() {
 
       yearSelect.simulate("change", { target: { value: 2017 } });
 
-      const selected = utils.newDate(calendar.state().date);
+      const selected = calendar.state().date.clone();
 
-      expect(utils.getYear(selected)).to.be.equal(2017);
+      expect(selected.year()).to.be.equal(2017);
     });
   });
 
@@ -422,7 +431,6 @@ describe("Calendar", function() {
         maxDate: utils.addMonths(utils.newDate(), 3),
         showDisabledMonthNavigation: true
       });
-
       const prevDisabledNavigationButton = calendar.find(
         ".react-datepicker__navigation--previous--disabled"
       );
@@ -436,7 +444,7 @@ describe("Calendar", function() {
 
     it("should show disabled next month navigation", function() {
       const calendar = getCalendar({
-        minDate: utils.subMonths(utils.newDate(), 3),
+        minDate: utils.subtractMonths(utils.newDate(), 3),
         maxDate: utils.newDate(),
         showDisabledMonthNavigation: true
       });
@@ -453,7 +461,7 @@ describe("Calendar", function() {
 
     it("should not show disabled previous/next month navigation when next/previous month available", function() {
       const calendar = getCalendar({
-        minDate: utils.subMonths(utils.newDate(), 3),
+        minDate: utils.subtractMonths(utils.newDate(), 3),
         maxDate: utils.addMonths(utils.newDate(), 3),
         showDisabledMonthNavigation: true
       });
@@ -501,7 +509,7 @@ describe("Calendar", function() {
     it("when clicking non-disabled month navigation, should change month", function() {
       const calendar = getCalendar({
         selected: utils.newDate(),
-        minDate: utils.subMonths(utils.newDate(), 3),
+        minDate: utils.subtractMonths(utils.newDate(), 3),
         maxDate: utils.addMonths(utils.newDate(), 3),
         showDisabledMonthNavigation: true,
         onMonthChange: onMonthChangeSpy
@@ -551,7 +559,7 @@ describe("Calendar", function() {
   it("should show the month-year dropdown menu if toggled on", function() {
     const calendar = getCalendar({
       showMonthYearDropdown: true,
-      minDate: utils.subYears(utils.newDate(), 1),
+      minDate: utils.subtractYears(utils.newDate(), 1),
       maxDate: utils.addYears(utils.newDate(), 1)
     });
     const monthYearReadView = calendar.find(MonthYearDropdown);
@@ -561,7 +569,7 @@ describe("Calendar", function() {
   it("should show only one month-year dropdown menu if toggled on and multiple month mode on", function() {
     const calendar = getCalendar({
       showMonthYearDropdown: true,
-      minDate: utils.subYears(utils.newDate(), 1),
+      minDate: utils.subtractYears(utils.newDate(), 1),
       maxDate: utils.addYears(utils.newDate(), 1),
       monthsShown: 2
     });
@@ -586,7 +594,15 @@ describe("Calendar", function() {
     const calendar = getCalendar({ todayButton: "Vandaag" });
     const todayButton = calendar.find(".react-datepicker__today-button");
     todayButton.simulate("click");
-    expect(utils.isSameDay(calendar.state().date, utils.newDate()));
+    expect(calendar.state().date.isSame(utils.newDate(), "day"));
+  });
+
+  it("should set custom today date when pressing todayButton", () => {
+    const todayInAuckland = utils.newDateWithOffset(12);
+    const calendar = getCalendar({ todayButton: "Vandaag", utcOffset: 12 });
+    const todayButton = calendar.find(".react-datepicker__today-button");
+    todayButton.simulate("click");
+    expect(utils.isSameDay(calendar.state().date, todayInAuckland));
   });
 
   it("should use a hash for week label if weekLabel is NOT provided", () => {
@@ -641,31 +657,24 @@ describe("Calendar", function() {
   });
 
   it("uses weekdaysShort instead of weekdaysMin provided useWeekdaysShort prop is present", () => {
+    utils.registerLocale("weekDaysLocale", {
+      parentLocale: "en",
+      weekdaysMin: "AA_BB_CC_DD_EE_FF_GG".split("_"),
+      weekdaysShort: "AAA_BBB_CCC_DDD_EEE_FFF_GGG".split("_")
+    });
+
     const calendarShort = mount(
-      <Calendar
-        locale="en"
-        dateFormat={dateFormat}
-        onClickOutside={() => {}}
-        onSelect={() => {}}
-        useWeekdaysShort
-      />
+      <Calendar locale="weekDaysLocale" useWeekdaysShort />
     );
-    const calendarMin = mount(
-      <Calendar
-        locale="en"
-        dateFormat={dateFormat}
-        onClickOutside={() => {}}
-        onSelect={() => {}}
-      />
-    );
+    const calendarMin = mount(<Calendar locale="weekDaysLocale" />);
 
     const daysNamesShort = calendarShort.find(".react-datepicker__day-name");
-    expect(daysNamesShort.at(0).text()).to.equal("Sun");
-    expect(daysNamesShort.at(6).text()).to.equal("Sat");
+    expect(daysNamesShort.at(0).text()).to.equal("AAA");
+    expect(daysNamesShort.at(6).text()).to.equal("GGG");
 
     const daysNamesMin = calendarMin.find(".react-datepicker__day-name");
-    expect(daysNamesMin.at(0).text()).to.equal("Su");
-    expect(daysNamesMin.at(6).text()).to.equal("Sa");
+    expect(daysNamesMin.at(0).text()).to.equal("AA");
+    expect(daysNamesMin.at(6).text()).to.equal("GG");
   });
 
   it("should set the date to the selected day of the previous month when previous button clicked", () => {
@@ -690,7 +699,7 @@ describe("Calendar", function() {
       "react-datepicker__navigation--previous"
     );
     TestUtils.Simulate.click(previousButton);
-    expect(utils.formatDate(date, "dd.MM.yyyy")).to.equal(expectedDate);
+    expect(utils.formatDate(date, "DD.MM.YYYY")).to.equal(expectedDate);
   });
 
   it("should set the date to the selected day of the next when next button clicked", () => {
@@ -715,7 +724,7 @@ describe("Calendar", function() {
       "react-datepicker__navigation--next"
     );
     TestUtils.Simulate.click(nextButton);
-    expect(utils.formatDate(date, "dd.MM.yyyy")).to.equal(expectedDate);
+    expect(utils.formatDate(date, "DD.MM.YYYY")).to.equal(expectedDate);
   });
 
   it("should set the date to the last possible day of the previous month when previous button clicked", () => {
@@ -740,7 +749,7 @@ describe("Calendar", function() {
       "react-datepicker__navigation--previous"
     );
     TestUtils.Simulate.click(previousButton);
-    expect(utils.formatDate(date, "dd.MM.yyyy")).to.equal(expectedDate);
+    expect(utils.formatDate(date, "DD.MM.YYYY")).to.equal(expectedDate);
   });
 
   describe("onMonthChange", () => {
@@ -838,7 +847,7 @@ describe("Calendar", function() {
           hideCalendar={() => {}}
           dropdownMode="select"
           showMonthYearDropdown
-          minDate={utils.subYears(utils.newDate(), 1)}
+          minDate={utils.subtractYears(utils.newDate(), 1)}
           maxDate={utils.addYears(utils.newDate(), 1)}
           onYearChange={onYearChangeSpy}
           onMonthChange={onMonthChangeSpy}
@@ -888,7 +897,7 @@ describe("Calendar", function() {
           showYearDropdown
           showMonthDropdown
           showMonthYearDropdown
-          minDate={utils.subYears(utils.newDate(), 1)}
+          minDate={utils.subtractYears(utils.newDate(), 1)}
           maxDate={utils.addYears(utils.newDate(), 1)}
           onDropdownFocus={onDropdownFocusSpy}
         />
@@ -938,64 +947,46 @@ describe("Calendar", function() {
 
   describe("localization", function() {
     function testLocale(calendar, selected, locale) {
+      const localized = utils.localizeDate(selected, locale);
+
       const calendarText = calendar.find(".react-datepicker__current-month");
       expect(calendarText.text()).to.equal(
-        utils.formatDate(selected, dateFormat, locale)
+        utils.formatDate(localized, dateFormat)
       );
-      const firstDateOfWeek = utils.getStartOfWeek(selected, locale);
+
+      const firstDateOfWeek = utils.getStartOfWeek(utils.cloneDate(localized));
       const firstWeekDayMin = utils.getWeekdayMinInLocale(
-        firstDateOfWeek,
-        locale
+        utils.getLocaleData(firstDateOfWeek),
+        firstDateOfWeek
       );
       const firstHeader = calendar.find(".react-datepicker__day-name").at(0);
       expect(firstHeader.text()).to.equal(firstWeekDayMin);
     }
 
-    it("should use the 'en' locale by default", function() {
+    it("should use the globally-defined locale by default", function() {
       const selected = utils.newDate();
       const calendar = getCalendar({ selected });
-      testLocale(calendar, selected);
-    });
-
-    it("should use the default locale when set", function() {
-      const selected = utils.newDate();
-      utils.setDefaultLocale("fi");
-
-      const calendar = getCalendar({ selected });
-      testLocale(calendar, selected, "fi");
-      utils.setDefaultLocale("");
+      testLocale(calendar, selected, utils.getDefaultLocale());
     });
 
     it("should use the locale specified as a prop", function() {
-      utils.registerLocale("fi", fi);
-      const locale = "fi";
-      const selected = utils.newDate();
+      const locale = "fr";
+      const selected = utils.localizeDate(utils.newDate(), locale);
       const calendar = getCalendar({ selected, locale });
       testLocale(calendar, selected, locale);
     });
 
-    it("should override the default locale with the locale prop", function() {
-      const locale = "en";
-      const selected = utils.newDate();
-      utils.setDefaultLocale("fi");
-
-      const calendar = getCalendar({ selected, locale });
-      testLocale(calendar, selected, locale);
-      utils.setDefaultLocale("");
+    it("should override the locale of the date with the globally-defined locale", function() {
+      const selected = utils.localizeDate(utils.newDate(), "fr");
+      const calendar = getCalendar({ selected });
+      testLocale(calendar, selected, utils.getDefaultLocale());
     });
 
-    it("should accept a raw date-fns locale object", function() {
-      // Note that we explicitly do not call `registerLocale`, because that
-      // would create a global variable, which we want to avoid.
-      const locale = eo;
+    it("should override the locale of the date with the locale prop", function() {
+      const locale = "fr";
       const selected = utils.newDate();
-
       const calendar = getCalendar({ selected, locale });
       testLocale(calendar, selected, locale);
-
-      // Other tests touch this global, so it will always be present, but at the
-      // very least we can make sure the test worked without 'eo' being added.
-      expect(window.__localeData__).not.to.haveOwnProperty("eo");
     });
 
     it("should render empty custom header", function() {
@@ -1003,74 +994,6 @@ describe("Calendar", function() {
 
       const header = calendar.find(".react-datepicker__header--custom");
       expect(header).to.have.length(1);
-    });
-  });
-
-  describe("renderInputTimeSection", function() {
-    it("should render InputTime component", function() {
-      let calendar = mount(
-        <Calendar
-          dateFormat={dateFormat}
-          onSelect={() => {}}
-          onClickOutside={() => {}}
-          hideCalendar={() => {}}
-          dropdownMode="select"
-          showYearDropdown
-          showTimeInput
-        />
-      );
-      const timeInputClassname = calendar.find(
-        ".react-datepicker__input-time-container"
-      );
-      expect(timeInputClassname).to.have.length(1);
-    });
-  });
-
-  describe("when showMonthYearPicker is enabled", () => {
-    let calendar = mount(
-      <Calendar
-        dateFormat={DATE_FORMAT}
-        onSelect={() => {}}
-        onClickOutside={() => {}}
-        hideCalendar={() => {}}
-        showMonthYearPicker
-      />
-    );
-    it("should change the next and previous labels", () => {
-      const previous = calendar.find(".react-datepicker__navigation--previous");
-      const next = calendar.find(".react-datepicker__navigation--next");
-      expect(previous.text()).to.equal("Previous Year");
-      expect(next.text()).to.equal("Next Year");
-    });
-
-    it("calls decreaseYear when previous month button clicked", () => {
-      var calendar = TestUtils.renderIntoDocument(
-        <Calendar
-          dateFormat={DATE_FORMAT}
-          onSelect={() => {}}
-          onClickOutside={() => {}}
-          showMonthYearPicker
-        />
-      );
-      calendar.state.date = utils.parseDate("09/28/1993", DATE_FORMAT);
-      var decreaseYear = calendar.decreaseYear;
-      decreaseYear();
-      assert.equal(utils.getYear(calendar.state.date), 1992);
-    });
-
-    it("calls increaseYear when next month button clicked", () => {
-      var calendar = TestUtils.renderIntoDocument(
-        <Calendar
-          dateFormat={DATE_FORMAT}
-          onSelect={() => {}}
-          onClickOutside={() => {}}
-          showMonthYearPicker
-        />
-      );
-      calendar.state.date = utils.parseDate("09/28/1993", DATE_FORMAT);
-      var increaseYear = calendar.increaseYear;
-      increaseYear();
-      assert.equal(utils.getYear(calendar.state.date), 1994);
     });
   });
 });

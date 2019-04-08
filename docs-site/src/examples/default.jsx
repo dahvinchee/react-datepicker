@@ -1,11 +1,12 @@
 import React from "react";
 import DatePicker from "react-datepicker";
+import moment from "moment";
 
 export default class Default extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      startDate: new Date()
+      startDate: moment()
     };
   }
 

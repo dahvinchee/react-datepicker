@@ -3,37 +3,37 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import {
   addMonths,
+  cloneDate,
   formatDate,
   getStartOfMonth,
-  newDate,
   isAfter,
   isSameMonth,
-  isSameYear,
-  getTime
+  isSameYear
 } from "./date_utils";
 
 function generateMonthYears(minDate, maxDate) {
   const list = [];
 
-  let currDate = getStartOfMonth(minDate);
-  const lastDate = getStartOfMonth(maxDate);
+  const currDate = getStartOfMonth(cloneDate(minDate));
+  const lastDate = getStartOfMonth(cloneDate(maxDate));
 
   while (!isAfter(currDate, lastDate)) {
-    list.push(newDate(currDate));
+    list.push(cloneDate(currDate));
 
-    currDate = addMonths(currDate, 1);
+    addMonths(currDate, 1);
   }
+
   return list;
 }
 
 export default class MonthYearDropdownOptions extends React.Component {
   static propTypes = {
-    minDate: PropTypes.instanceOf(Date).isRequired,
-    maxDate: PropTypes.instanceOf(Date).isRequired,
+    minDate: PropTypes.object.isRequired,
+    maxDate: PropTypes.object.isRequired,
     onCancel: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
     scrollableMonthYearDropdown: PropTypes.bool,
-    date: PropTypes.instanceOf(Date).isRequired,
+    date: PropTypes.object.isRequired,
     dateFormat: PropTypes.string.isRequired
   };
 
@@ -47,7 +47,8 @@ export default class MonthYearDropdownOptions extends React.Component {
 
   renderOptions = () => {
     return this.state.monthYearsList.map(monthYear => {
-      const monthYearPoint = getTime(monthYear);
+      const monthYearPoint = monthYear.valueOf();
+
       const isSameMonthYear =
         isSameYear(this.props.date, monthYear) &&
         isSameMonth(this.props.date, monthYear);

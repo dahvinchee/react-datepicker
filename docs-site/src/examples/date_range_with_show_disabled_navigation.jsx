@@ -1,6 +1,6 @@
 import React from "react";
 import DatePicker from "react-datepicker";
-import addMonths from "date-fns/addMonths";
+import moment from "moment";
 
 export default class DateRangeWithShowDisabledNavigation extends React.Component {
   state = {
@@ -17,13 +17,12 @@ export default class DateRangeWithShowDisabledNavigation extends React.Component
     return (
       <div className="row">
         <pre className="column example__code">
-          <code className="jsx">
-            {`
+          <code className="jsx">{`
 <DatePicker
   selected={this.state.startDate}
   onChange={this.handleChange}
-  minDate={new Date()}
-  maxDate={addMonths(new Date(), 5)}
+  minDate={moment()}
+  maxDate={moment().add(5, "months")}
   showDisabledMonthNavigation />
 </div>
 
@@ -34,10 +33,9 @@ export default class DateRangeWithShowDisabledNavigation extends React.Component
           <DatePicker
             selected={this.state.startDate}
             onChange={this.handleChange}
-            minDate={new Date()}
-            maxDate={addMonths(new Date(), 5)}
-            showDisabledMonthNavigation
-          />
+            minDate={moment()}
+            maxDate={moment().add(5, "months")}
+            showDisabledMonthNavigation />
         </div>
       </div>
     );

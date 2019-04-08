@@ -1,6 +1,5 @@
 import React from "react";
 import DatePicker from "react-datepicker";
-import getDay from "date-fns/getDay";
 
 export default class FilterDates extends React.Component {
   state = {
@@ -14,7 +13,7 @@ export default class FilterDates extends React.Component {
   };
 
   isWeekday = date => {
-    const day = getDay(date);
+    const day = date.day();
     return day !== 0 && day !== 6;
   };
 
@@ -39,8 +38,7 @@ export default class FilterDates extends React.Component {
             selected={this.state.date}
             onChange={this.handleChange}
             filterDate={this.isWeekday}
-            placeholderText="Select a weekday"
-          />
+            placeholderText="Select a weekday"/>
         </div>
       </div>
     );

@@ -1,7 +1,6 @@
 import React from "react";
 import DatePicker from "react-datepicker";
-import addDays from "date-fns/addDays";
-import subDays from "date-fns/subDays";
+import moment from "moment";
 
 export default class highlightDatesRanges extends React.Component {
   constructor(props) {
@@ -9,18 +8,18 @@ export default class highlightDatesRanges extends React.Component {
     this.highlightWithRanges = [
       {
         "react-datepicker__day--highlighted-custom-1": [
-          subDays(new Date(), 4),
-          subDays(new Date(), 3),
-          subDays(new Date(), 2),
-          subDays(new Date(), 1)
+          moment().subtract(4, "days"),
+          moment().subtract(3, "days"),
+          moment().subtract(2, "days"),
+          moment().subtract(1, "days")
         ]
       },
       {
         "react-datepicker__day--highlighted-custom-2": [
-          addDays(new Date(), 1),
-          addDays(new Date(), 2),
-          addDays(new Date(), 3),
-          addDays(new Date(), 4)
+          moment().add(1, "days"),
+          moment().add(2, "days"),
+          moment().add(3, "days"),
+          moment().add(4, "days")
         ]
       }
     ];
@@ -49,25 +48,25 @@ export default class highlightDatesRanges extends React.Component {
             <br />
             {'    { "react-datepicker__day--highlighted-custom-1": ['}
             <br />
-            {"      subDays(new Date(), 4),"}
+            {'      moment().subtract(4, "days"),'}
             <br />
-            {"      subDays(new Date(), 3),"}
+            {'      moment().subtract(3, "days"),'}
             <br />
-            {"      subDays(new Date(), 2),"}
+            {'      moment().subtract(2, "days"),'}
             <br />
-            {"      subDays(new Date(), 1) ]"}
+            {'      moment().subtract(1, "days") ]'}
             <br />
             {"    },"}
             <br />
             {'    { "react-datepicker__day--highlighted-custom-2": ['}
             <br />
-            {"      addDays(new Date(), 1),"}
+            {'      moment().add(1, "days"),'}
             <br />
-            {"      addDays(new Date(), 2),"}
+            {'      moment().add(2, "days"),'}
             <br />
-            {"      addDays(new Date(), 3),"}
+            {'      moment().add(3, "days"),'}
             <br />
-            {"      addDays(new Date(), 4) ]"}
+            {'      moment().add(4, "days") ]'}
             <br />
             {"    }"}
             <br />
@@ -95,8 +94,7 @@ export default class highlightDatesRanges extends React.Component {
             selected={this.state.startDate}
             onChange={this.handleChange}
             highlightDates={this.highlightWithRanges}
-            placeholderText="This highlight two ranges with custom classes"
-          />
+            placeholderText="This highlight two ranges with custom classes"/>
         </div>
       </div>
     );

@@ -1,8 +1,12 @@
 import React from "react";
 import { mount } from "enzyme";
 import * as utils from "../src/date_utils";
-import { setTime, newDate } from "../src/date_utils";
+import { setTime, cloneDate, newDate } from "../src/date_utils";
 import TimeComponent from "../src/time";
+
+function cloneDateWithTime(date, time) {
+  return setTime(cloneDate(date), time);
+}
 
 describe("TimeComponent", () => {
   let sandbox;
@@ -20,9 +24,9 @@ describe("TimeComponent", () => {
     const timeComponent = mount(
       <TimeComponent
         includeTimes={[
-          utils.addMinutes(today, 60),
-          utils.addMinutes(today, 120),
-          utils.addMinutes(today, 150)
+          utils.addMinutes(cloneDate(today), 60),
+          utils.addMinutes(cloneDate(today), 120),
+          utils.addMinutes(cloneDate(today), 150)
         ]}
       />
     );

@@ -5,34 +5,31 @@ import {
   getDay,
   getMonth,
   getDate,
-  newDate,
+  now,
   isSameDay,
   isDayDisabled,
   isDayInRange,
-  isEqual,
-  isBefore,
-  isAfter,
-  getDayOfWeekCode,
-  formatDate
+  getDayOfWeekCode
 } from "./date_utils";
 
 export default class Day extends React.Component {
   static propTypes = {
     disabledKeyboardNavigation: PropTypes.bool,
-    day: PropTypes.instanceOf(Date).isRequired,
+    day: PropTypes.object.isRequired,
     dayClassName: PropTypes.func,
-    endDate: PropTypes.instanceOf(Date),
+    endDate: PropTypes.object,
     highlightDates: PropTypes.instanceOf(Map),
     inline: PropTypes.bool,
     month: PropTypes.number,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
-    preSelection: PropTypes.instanceOf(Date),
+    preSelection: PropTypes.object,
     selected: PropTypes.object,
-    selectingDate: PropTypes.instanceOf(Date),
+    selectingDate: PropTypes.object,
     selectsEnd: PropTypes.bool,
     selectsStart: PropTypes.bool,
-    startDate: PropTypes.instanceOf(Date),
+    startDate: PropTypes.object,
+    utcOffset: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     renderDayContents: PropTypes.func
   };
 
@@ -66,7 +63,7 @@ export default class Day extends React.Component {
     }
 
     // Looking for className in the Map of {'day string, 'className'}
-    const dayStr = formatDate(day, "MM.dd.yyyy");
+    const dayStr = day.format("MM.DD.YYYY");
     return highlightDates.get(dayStr);
   };
 
@@ -92,19 +89,11 @@ export default class Day extends React.Component {
       return false;
     }
 
-    if (
-      selectsStart &&
-      endDate &&
-      (isBefore(selectingDate, endDate) || isEqual(selectingDate, endDate))
-    ) {
+    if (selectsStart && endDate && selectingDate.isSameOrBefore(endDate)) {
       return isDayInRange(day, selectingDate, endDate);
     }
 
-    if (
-      selectsEnd &&
-      startDate &&
-      (isAfter(selectingDate, startDate) || isEqual(selectingDate, startDate))
-    ) {
+    if (selectsEnd && startDate && selectingDate.isSameOrAfter(startDate)) {
       return isDayInRange(day, startDate, selectingDate);
     }
 
@@ -185,7 +174,9 @@ export default class Day extends React.Component {
         "react-datepicker__day--in-selecting-range": this.isInSelectingRange(),
         "react-datepicker__day--selecting-range-start": this.isSelectingRangeStart(),
         "react-datepicker__day--selecting-range-end": this.isSelectingRangeEnd(),
-        "react-datepicker__day--today": this.isSameDay(newDate()),
+        "react-datepicker__day--today": this.isSameDay(
+          now(this.props.utcOffset)
+        ),
         "react-datepicker__day--weekend": this.isWeekend(),
         "react-datepicker__day--outside-month": this.isOutsideMonth()
       },
@@ -203,10 +194,7 @@ export default class Day extends React.Component {
         role="option"
       >
         {this.props.renderDayContents
-          ? this.props.renderDayContents(
-              getDate(this.props.day),
-              this.props.day
-            )
+          ? this.props.renderDayContents(getDate(this.props.day))
           : getDate(this.props.day)}
       </div>
     );

@@ -1,50 +1,46 @@
-import React from "react";
-import DatePicker from "react-datepicker";
-import addMonths from "date-fns/addMonths";
-import subMonths from "date-fns/subMonths";
+import React from 'react'
+import DatePicker from 'react-datepicker'
+import moment from 'moment'
 
 export default class MonthYearDropdown extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
-      startDate: new Date()
-    };
+      startDate: moment()
+    }
   }
 
-  handleChange = date => {
+  handleChange = (date) => {
     this.setState({
       startDate: date
-    });
-  };
+    })
+  }
 
-  render() {
-    return (
-      <div className="row">
-        <pre className="column example__code">
-          <code className="jsx">
-            {`
+  render () {
+    return <div className="row">
+      <pre className="column example__code">
+        <code className="jsx">{`
 <DatePicker
   selected={this.state.startDate}
   onChange={this.handleChange}
-  dateFormatCalendar={"MMM yyyy"}
-  minDate={subMonths(new Date(), 6)}
-  maxDate={addMonths(new Date(), 6)}
+  dateFormatCalendar={"MMM YYYY"}
+  minDate={moment().subtract(6, "month")}
+  maxDate={moment().add(6, "month")}
   showMonthYearDropdown
 />
 `}
-          </code>
-        </pre>
-        <div className="column">
-          <DatePicker
-            selected={this.state.startDate}
-            onChange={this.handleChange}
-            dateFormatCalendar={"MMM yyyy"}
-            minDate={subMonths(new Date(), 6)}
-            maxDate={addMonths(new Date(), 6)}
-            showMonthYearDropdown
-          />
-        </div>
+        </code>
+      </pre>
+      <div className="column">
+        <DatePicker
+          selected={this.state.startDate}
+          onChange={this.handleChange}
+          dateFormatCalendar={"MMM YYYY"}
+          minDate={moment().subtract(6, "month")}
+          maxDate={moment().add(6, "month")}
+          showMonthYearDropdown
+        />
       </div>
-    );
+    </div>
   }
 }

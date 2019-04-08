@@ -1,11 +1,12 @@
 import React from "react";
 import DatePicker from "react-datepicker";
-import setMinutes from "date-fns/setMinutes";
-import setHours from "date-fns/setHours";
+import moment from "moment";
 
 export default class ExcludeTimePeriod extends React.Component {
   state = {
-    startDate: setHours(setMinutes(new Date(), 30), 17)
+    startDate: moment()
+      .hours(17)
+      .minutes(30)
   };
 
   handleChange = date => {
@@ -28,11 +29,11 @@ export default class ExcludeTimePeriod extends React.Component {
             <strong>
               {"  showTimeSelect"}
               <br />
-              {"  minTime={setHours(setMinutes(new Date(), 0), 17)}"}
+              {"  minTime={moment().hours(17).minutes(0)}"}
               <br />
-              {"  maxTime={setHours(setMinutes(new Date(), 30), 20)}"}
+              {"  maxTime={moment().hours(20).minutes(30)}"}
               <br />
-              {'  dateFormat="MMMM d, yyyy"'}
+              {'  dateFormat="LLL"'}
             </strong>
             <br />
             {"/>"}
@@ -43,10 +44,13 @@ export default class ExcludeTimePeriod extends React.Component {
             selected={this.state.startDate}
             onChange={this.handleChange}
             showTimeSelect
-            minTime={setHours(setMinutes(new Date(), 0), 17)}
-            maxTime={setHours(setMinutes(new Date(), 30), 20)}
-            dateFormat="MMMM d, yyyy h:mm aa"
-          />
+            minTime={moment()
+              .hours(17)
+              .minutes(0)}
+            maxTime={moment()
+              .hours(20)
+              .minutes(30)}
+            dateFormat="LLL"/>
         </div>
       </div>
     );
