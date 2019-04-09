@@ -86,6 +86,7 @@ export default class Week extends React.Component {
             excludeDates={this.props.excludeDates}
             includeDates={this.props.includeDates}
             inline={this.props.inline}
+            hoveredEndDate={this.props.hoveredEndDate}
             highlightDates={this.props.highlightDates}
             selectingDate={this.props.selectingDate}
             filterDate={this.props.filterDate}
