@@ -87,6 +87,7 @@ export default class DatePicker extends React.Component {
     disabledKeyboardNavigation: PropTypes.bool,
     dropdownMode: PropTypes.oneOf(["scroll", "select"]).isRequired,
     endDate: PropTypes.object,
+    hoveredEndDate: PropTypes.object,
     excludeDates: PropTypes.array,
     filterDate: PropTypes.func,
     fixedHeight: PropTypes.bool,
@@ -606,6 +607,7 @@ export default class DatePicker extends React.Component {
         selectsEnd={this.props.selectsEnd}
         startDate={this.props.startDate}
         endDate={this.props.endDate}
+        hoveredEndDate={this.props.hoveredEndDate}
         excludeDates={this.props.excludeDates}
         filterDate={this.props.filterDate}
         onClickOutside={this.handleCalendarClickOutside}
